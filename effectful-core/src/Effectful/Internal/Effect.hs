@@ -8,6 +8,8 @@ module Effectful.Internal.Effect
   ( Effect
   , (:>)(..)
   , (:>>)
+  , (:::)
+  , HasEffect
   , Subset(..)
   , KnownSubset
   , KnownPrefix(..)
@@ -20,6 +22,15 @@ module Effectful.Internal.Effect
 
 import Data.Kind
 import GHC.TypeLits
+
+import Polytropos.Core (FieldIndex (..), SubRow (..), Pair (..))
+
+-- | Type-level labeled effect binding.
+type (:::) (name :: Symbol) (e :: Effect) = name ':= e
+infixr 6 :::
+
+-- | Query an effect in an open row by label name.
+type HasEffect (name :: Symbol) (e :: Effect) (es :: k) = FieldIndex name es e
 
 -- | The kind of effects.
 type Effect = (Type -> Type) -> Type -> Type
@@ -52,6 +63,9 @@ instance TypeError
 
 instance {-# OVERLAPPING #-} e :> (e : es) where
   reifyIndex = 0
+
+instance {-# OVERLAPPABLE #-} FieldIndex e es e => e :> es where
+  reifyIndex = fieldIndex @_ @e @es @e
 
 instance e :> es => e :> (x : es) where
   reifyIndex = 1 + reifyIndex @e @es

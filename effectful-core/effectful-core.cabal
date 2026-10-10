@@ -33,6 +33,7 @@ common language
                         -Wcompat
                         -Werror=missing-deriving-strategies
                         -Werror=prepositive-qualified-module
+                        -fplugin=Polytropos.Plugin
 
     default-language:   GHC2021
 
@@ -67,6 +68,8 @@ library
                     , strict-mutable-base >= 2.0.0.0  && < 3
                     , transformers-base   >= 0.4.6
                     , unliftio-core       >= 0.2.0.1
+                    , polytropos-core
+                    , polytropos-plugin
 
     hs-source-dirs:  src
 
