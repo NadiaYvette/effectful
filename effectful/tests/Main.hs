@@ -16,6 +16,7 @@ import OutputTests
 import PrimTests
 import ReaderTests
 import ReturnWithTests
+import SoupTests
 import StateTests
 import TimeoutTests
 import UnliftTests
@@ -37,6 +38,7 @@ main = defaultMain $ testGroup "effectful"
   , primTests
   , readerTests
   , returnWithTests
+  , soupTests
   , stateTests
   , timeoutTests
   , unliftTests

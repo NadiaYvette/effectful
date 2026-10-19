@@ -70,6 +70,7 @@ library
                     , unliftio-core       >= 0.2.0.1
                     , polytropos-core
                     , polytropos-plugin
+                    , polytropos-reader-soup
 
     hs-source-dirs:  src
 
@@ -114,6 +115,8 @@ library
                      Effectful.Provider.List
                      Effectful.Reader.Dynamic
                      Effectful.Reader.Static
+                     Effectful.ReaderSoup
+                     Effectful.Soup
                      Effectful.ReturnWith.Dynamic
                      Effectful.ReturnWith.Static
                      Effectful.State.Dynamic

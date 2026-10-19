@@ -11,15 +11,23 @@ module Effectful.Labeled
 
     -- ** Handlers
   , runLabeled
+  , runLabeledBy
 
     -- ** Operations
   , labeled
+  , labeledBy
+  , sendLabeled
+
+    -- * Re-exports
+  , Field(..)
   ) where
 
 import Unsafe.Coerce (unsafeCoerce)
 
 import Effectful
+import Effectful.Dispatch.Dynamic (send)
 import Effectful.Dispatch.Static
+import Polytropos.Core (Field(..))
 
 -- | Assign a label to an effect.
 --
@@ -61,6 +69,16 @@ runLabeled
   -> Eff es b
 runLabeled runE m = runE (fromLabeled m)
 
+-- | Run a 'Labeled' effect using an OverloadedLabels field symbol (e.g. @#db@).
+runLabeledBy
+  :: forall label e es a b
+   . HasCallStack
+  => Field label
+  -> (Eff (e : es) a -> Eff es b)
+  -> Eff (Labeled label e : es) a
+  -> Eff es b
+runLabeledBy _ = runLabeled @label
+
 -- | Bring an effect into scope without a label.
 --
 -- Useful for running code written with the non-labeled effect in mind.
@@ -71,6 +89,28 @@ labeled
   -- ^ The action using the effect.
   -> Eff es a
 labeled m = subsume @(Labeled label e) (toLabeled m)
+
+-- | OverloadedLabels variant of 'labeled'.
+labeledBy
+  :: forall label e es a
+   . (HasCallStack, Labeled label e :> es)
+  => Field label
+  -> Eff (e : es) a
+  -> Eff es a
+labeledBy _ = labeled @label
+
+-- | Send an operation to a dynamically dispatched labeled effect using OverloadedLabels syntax.
+--
+-- Example:
+--
+-- >>> sendLabeled #logger (Log "message")
+sendLabeled
+  :: forall label e es a
+   . (HasCallStack, DispatchOf e ~ Dynamic, Labeled label e :> es)
+  => Field label
+  -> e (Eff es) a
+  -> Eff es a
+sendLabeled _ op = send (Labeled @label op)
 
 ----------------------------------------
 -- Helpers
